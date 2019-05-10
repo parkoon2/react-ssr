@@ -1,7 +1,8 @@
 const path = require('path')
+const webpackNodeExternals = require('webpack-node-externals')
 
 module.exports = {
-    target: 'node',
+    target: 'web',
     entry: './src/client.js',
     output: {
         filename: 'client_bundle.js',
@@ -9,6 +10,7 @@ module.exports = {
         publicPath: '/build/public'
     },
     mode: 'production',
+    // devtool: false,
     module: {
         rules: [
             {
@@ -25,6 +27,8 @@ module.exports = {
                         ],
                         '@babel/preset-react'
                     ]
+                    // ,
+                    // plugins: ['@babel/plugin-proposal-class-properties']
                 }
             }
         ]

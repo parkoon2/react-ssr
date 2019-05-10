@@ -12,8 +12,9 @@ const PORT = process.env.PORT || 3000
 
 app.use(bodyParser.json())
 app.use(express.static('build/public'))
+app.use(express.static('public'))
 
-app.get('*', (req, res) => {
+app.get('/ybmnet', (req, res) => {
     const context = {}
 
     const content = ReactDOMServer.renderToString(
@@ -27,6 +28,8 @@ app.get('*', (req, res) => {
         <head>
             ${helmet.meta.toString()}
             ${helmet.title.toString()}
+            <link rel="stylesheet" type="text/css" href="css/reset.css">
+            <link rel="stylesheet" type="text/css" href="css/style.css">
         </head>
         <body>
             <div id="root">

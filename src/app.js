@@ -1,13 +1,13 @@
 import React from 'react'
 import { Switch, Route } from 'react-router'
 
-import Home from './pages/homePageComponent'
+import MainPage from './pages/MainPage'
 
 class App extends React.Component {
     render() {
         return (
             <Switch>
-                <Route path="/" render={props => <Home {...props} />} />
+                <Route path="/" render={props => <MainPage {...props} />} />
             </Switch>
         )
     }
