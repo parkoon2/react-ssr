@@ -2,7 +2,7 @@ import React from 'react'
 import { Helmet } from 'react-helmet'
 import queryString from 'query-string'
 
-import Header from '../components/global/Header'
+import { Header, socket } from '../components/global/Header'
 import Container from '../components/global/Container'
 
 class MainPage extends React.Component {
@@ -10,9 +10,9 @@ class MainPage extends React.Component {
         super(props)
 
         const query = queryString.parse(this.props.location.search)
-
+        console.log(`[Query parameter]`, query)
         // Initialize information from query parameter
-        this.type = query.type || 'callee'
+        this.userType = query.userType || 'callee'
         this.room = query.room
         this.student = query.student
         this.room = query.room
@@ -23,7 +23,37 @@ class MainPage extends React.Component {
     }
 
     componentDidMount() {
-        console.log(queryString.parse(this.props.location.search))
+        // login
+        this.login()
+    }
+
+    login = () => {
+        // sample
+        // caller --> t1 (학생)
+        // callee --> t2 (선생님)
+        if (this.userType === 'caller') {
+            socket.emit('gigagenie', {
+                eventOp: 'Login',
+                reqNo: '1',
+                reqDate: '1',
+                userId: 't1',
+                userPw:
+                    'e3b98a4da31a127d4bde6e43033f66ba274cab0eb7eb1c70ec41402bf6273dd8',
+                deviceType: 'pc'
+            })
+        }
+
+        if (this.userType === 'callee') {
+            socket.emit('gigagenie', {
+                eventOp: 'Login',
+                reqNo: '1',
+                reqDate: '1',
+                userId: 't2',
+                userPw:
+                    'e3b98a4da31a127d4bde6e43033f66ba274cab0eb7eb1c70ec41402bf6273dd8',
+                deviceType: 'pc'
+            })
+        }
     }
 
     // head() {
@@ -43,12 +73,14 @@ class MainPage extends React.Component {
                     <section className="left-section">
                         <div className="local-video">
                             <video
+                                muted
                                 autoPlay
                                 src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
                             />
                         </div>
                         <div className="remote-video">
                             <video
+                                muted
                                 autoPlay
                                 src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
                             />

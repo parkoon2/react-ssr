@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Nanum+Gothic+Coding');
+
 html,
 body,
 div,
@@ -121,4 +123,8 @@ q:after {
 table {
     border-collapse: collapse;
     border-spacing: 0;
+}
+
+body {
+    font-family: 'Nanum Gothic Coding', monospace;
 }
