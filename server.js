@@ -7,6 +7,10 @@ import { StaticRouter } from 'react-router'
 import { Helmet } from 'react-helmet'
 import App from './src/app'
 
+import { Provider } from 'react-redux'
+import { createStore } from 'redux'
+import rootReducer from './src/reducers'
+
 const app = express()
 const PORT = process.env.PORT || 3000
 
@@ -17,11 +21,25 @@ app.use(express.static('public'))
 app.get('/ybmnet', (req, res) => {
     const context = {}
 
+    const store = createStore(rootReducer)
+    const { room, student, teacher, type } = req.query
+
+    const preState = {
+        room,
+        student,
+        teacher,
+        type
+    }
     const content = ReactDOMServer.renderToString(
-        <StaticRouter location={req.url} context={context}>
+        <Provider store={store}>
             <App />
-        </StaticRouter>
+        </Provider>
     )
+    // const content = ReactDOMServer.renderToString(
+    //     <StaticRouter location={req.url} context={context}>
+    //         <App />
+    //     </StaticRouter>
+    // )
     const helmet = Helmet.renderStatic()
     const html = `
     <html>
@@ -30,15 +48,18 @@ app.get('/ybmnet', (req, res) => {
             ${helmet.title.toString()}
             <link rel="stylesheet" type="text/css" href="css/reset.css">
             <link rel="stylesheet" type="text/css" href="css/style.css">
+
         </head>
         <body>
             <div id="root">
                 ${content}
             </div>
+            <script>
+                window.__PRELOADED_STATE__  = ${JSON.stringify(preState)}
+            </script>
             <script src="client_bundle.js"></script>
         </body>
     </html>
-    
     `
 
     res.send(html)

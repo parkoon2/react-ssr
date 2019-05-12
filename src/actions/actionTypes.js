@@ -1,0 +1,14 @@
+export const START_CLASS = 'START_CLASS'
+export const STOP_CLASS = 'STOP_CLASS'
+
+export const START_P2P = 'START_P2P'
+export const STOP_P2P = 'STOP_P2P'
+
+export const SEND_MESSAGE = 'SEND_MESSAGE'
+export const ADD_MESSAGE = 'ADD_MESSAGE'
+
+/** socket */
+export const OPEN_WEBSOCKET = 'OPEN_WEBSOCKET'
+export const DISCONNECT_WEBSOCKET = 'DISCONNECT_WEBSOCKET'
+export const CONNECT_SOCKET_ERROR = 'CONNECT_SOCKET_ERROR'
+export const UPDATE_SOCKET_OBJECT = 'UPDATE_SOCKET_OBJECT'
