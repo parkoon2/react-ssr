@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import io from 'socket.io-client'
-
-import * as actions from '../../actions'
+import { updatePeer } from '../../actions'
 
 let socket
-
+let peer
 class Header extends Component {
     // endpoint = 'https://knowledgetalk.co.kr:9000/SignalServer'
     endpoint = 'http://localhost:3333'
@@ -25,89 +24,82 @@ class Header extends Component {
         // connect socket
         // socket = io(this.endpoint, this.option)
         // socket.on('connect', this.handleSocketConnected)
-        // socket.on('disconnect', this.handleSocketDisconnected)
-        // socket.on('gigagenie', this.handleSocketResponse)
-    }
-
-    handleSocketConnected = () => {
-        console.log(`socket connected!!`)
-        const { user } = this.props
-        if (user.type == 'caller') {
-            socket.emit('gigagenie', {
-                eventOp: 'Join',
-                userId: user.student,
-                roomId: user.room
-            })
-
-            // connection 만들기
-            this.peer = new RTCPeerConnection(this.configuration)
-
-            // handle onaddstream
-            this.peer.onaddstream = event => {
-                alert('event.stream')
-                // remoteStream = event.stream
-                // document.querySelector('video#remote').srcObject = event.stream
-            }
-
-            // handle onicecandidate
-            this.peer.onicecandidate = event => {
-                if (event.candidate) {
-                    console.log('otherUsername', otherUsername)
-                    socket.emit({
-                        eventOp: 'Candidate',
-                        candidate: event.candidate
-                    })
-                }
-            }
-
-            // 스트림 만들기
-            const constraint = {
-                video: false,
-                audio: true
-            }
-
-            navigator.mediaDevices
-                .getUserMedia(constraint)
-                .then(stream => {
-                    console.log('stream', stream)
-                    this.peer.addStream(stream)
-                    document.querySelector('video#local').srcObject = stream
-                })
-                .catch(err => {
-                    console.error('error in get usermedia', err)
-                })
-            // this.peer.addStream(localStream)
-        }
-    }
-    handleSocketDisconnected = () => {
-        console.log(`socket disconnected!!`)
-    }
-
-    handleSocketResponse = message => {
-        console.log(`[${message.eventOp} response]`, message)
-        switch (message.eventOp) {
-            case 'Login':
-                break
-            case 'Call':
-                break
-            case 'Join':
-                // 학생이 하겠다는 메세지를 보내고
-                // 선생 쪽에서는 시작을 하면 된다
-                break
-            default:
-                console.warn('Event op error')
-        }
     }
 
     startClass = () => {
-        const { user, startClass } = this.props
-        socket.emit('gigagenie', {
-            eventOp: 'Call',
-            test: 'test',
-            userId: user.teacher,
-            roomId: user.room,
-            targetId: user.student
-        })
+        const { dispatch, localVideo, remoteVideo } = this.props
+        const { socket } = this.props.socket
+        const { student, teacher } = this.props.user
+        try {
+            console.log({
+                eventOp: 'Call',
+                reqNo: '1',
+                reqDate: '2',
+                userId: teacher,
+                targetId: [student],
+                serviceType: 'multi',
+                reqDeviceType: 'pc'
+            })
+            socket.emit('gigagenie', {
+                eventOp: 'Call',
+                reqNo: '1',
+                reqDate: '2',
+                userId: teacher,
+                targetId: [student],
+                serviceType: 'multi',
+                reqDeviceType: 'pc'
+            })
+        } catch (err) {
+            console.error(err)
+        }
+
+        // connection 만들기
+        peer = new RTCPeerConnection(this.configuration)
+
+        // handle onaddstream
+        peer.onaddstream = event => {
+            // remoteStream = event.stream
+            console.log('========= LOG START event.stream =======')
+            console.log(event.stream)
+            console.log('========= LOG END =========')
+
+            remoteVideo.current.srcObject = event.stream
+        }
+
+        // handle onicecandidate
+        peer.onicecandidate = event => {
+            const { socket } = this.props.socket
+            const { teacher, room } = this.props.user
+            if (event.candidate) {
+                socket.emit({
+                    eventOp: 'Candidate',
+                    candidate: event.candidate,
+                    reqDate: '20190513180621947',
+                    reqNo: '201905131806249972',
+                    usage: 'cam',
+                    useMediaSvr: 'N',
+                    roomId: room,
+                    userId: teacher
+                })
+            }
+        }
+
+        // 스트림 만들기
+        const constraint = {
+            video: true,
+            audio: true
+        }
+
+        navigator.mediaDevices
+            .getUserMedia(constraint)
+            .then(stream => {
+                peer.addStream(stream)
+                dispatch(updatePeer(peer))
+                localVideo.current.srcObject = stream
+            })
+            .catch(err => {
+                console.error('error in get usermedia', err)
+            })
     }
 
     stopClass = () => {
@@ -153,20 +145,22 @@ class Header extends Component {
 const mapStateToProps = state => {
     return {
         video: state.video,
-        user: state.user
+        user: state.user,
+        socket: state.socket
     }
 }
 
-const mapDispatchToProps = dispatch => {
-    return {
-        startClass: () => dispatch(actions.startClass()),
-        stopClass: () => dispatch(actions.stopClass())
-    }
-}
+// const mapDispatchToProps = dispatch => {
+//     return {
+//         updatePeer: () => dis
+//         // startClass: () => dispatch(actions.startClass()),
+//         // stopClass: () => dispatch(actions.stopClass())
+//     }
+// }
 
 const HeaderContainer = connect(
-    mapStateToProps,
-    mapDispatchToProps
+    mapStateToProps
+    // mapDispatchToProps
 )(Header)
 
 export { socket, HeaderContainer }

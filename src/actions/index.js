@@ -6,9 +6,26 @@ import {
     CONNECT_SOCKET_ERROR,
     DISCONNECT_WEBSOCKET,
     SEND_MESSAGE,
-    ADD_MESSAGE
+    ADD_MESSAGE,
+    LOGIN_SUCCESS,
+    LOGIN_FAILURE,
+    UPDATE_PEER_OBJECT,
+    UPDATE_ROOM_INFO
 } from './actionTypes'
+
 import { socket } from '../components/global/Header'
+
+export const loginFailure = message => {
+    return {
+        type: LOGIN_FAILURE,
+        payload: message
+    }
+}
+export const loginSuccess = () => {
+    return {
+        type: LOGIN_SUCCESS
+    }
+}
 
 export const startClass = () => {
     return {
@@ -52,6 +69,20 @@ export const addMessage = payload => {
 export const openWebSocket = () => {
     return {
         type: OPEN_WEBSOCKET
+    }
+}
+
+export const updatePeer = peer => {
+    return {
+        type: UPDATE_PEER_OBJECT,
+        payload: peer
+    }
+}
+
+export const updateRoomInfo = room => {
+    return {
+        type: UPDATE_ROOM_INFO,
+        payload: room
     }
 }
 

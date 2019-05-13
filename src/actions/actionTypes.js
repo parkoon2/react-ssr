@@ -7,6 +7,14 @@ export const STOP_P2P = 'STOP_P2P'
 export const SEND_MESSAGE = 'SEND_MESSAGE'
 export const ADD_MESSAGE = 'ADD_MESSAGE'
 
+/** p2p */
+export const UPDATE_PEER_OBJECT = 'UPDATE_PEER_OBJECT'
+
+/** user */
+export const LOGIN_SUCCESS = 'LOGIN_SUCCESS'
+export const LOGIN_FAILURE = 'LOGIN_FAILURE'
+export const UPDATE_ROOM_INFO = 'UPDATE_ROOM_INFO'
+
 /** socket */
 export const OPEN_WEBSOCKET = 'OPEN_WEBSOCKET'
 export const DISCONNECT_WEBSOCKET = 'DISCONNECT_WEBSOCKET'

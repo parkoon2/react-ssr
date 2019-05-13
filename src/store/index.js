@@ -15,7 +15,7 @@ delete window.__PRELOADED_STATE__
 const store = createStore(
     rootReducer,
     {
-        user: { ...preloadedState }
+        user: { ...preloadedState, logined: false }
     },
     composeWithDevTools(applyMiddleware(...middlewares))
 )

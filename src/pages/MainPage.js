@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { createRef } from 'react'
 import { Helmet } from 'react-helmet'
 import queryString from 'query-string'
 import { connect } from 'react-redux'
@@ -20,6 +20,9 @@ class MainPage extends React.Component {
         this.room = query.room
         this.student = query.student
         this.room = query.room
+
+        this.localVideoRef = createRef()
+        this.remoteVideoRef = createRef()
     }
 
     exampleMethod() {
@@ -29,38 +32,6 @@ class MainPage extends React.Component {
     componentDidMount() {
         // connect web socket
         this.props.openWebSocket()
-
-        // login
-        // this.login()
-    }
-
-    login = () => {
-        // sample
-        // caller --> t1 (학생)
-        // callee --> t2 (선생님)
-        if (this.userType === 'caller') {
-            socket.emit('gigagenie', {
-                eventOp: 'Login',
-                reqNo: '1',
-                reqDate: '1',
-                userId: 't1',
-                userPw:
-                    'e3b98a4da31a127d4bde6e43033f66ba274cab0eb7eb1c70ec41402bf6273dd8',
-                deviceType: 'pc'
-            })
-        }
-
-        if (this.userType === 'callee') {
-            socket.emit('gigagenie', {
-                eventOp: 'Login',
-                reqNo: '1',
-                reqDate: '1',
-                userId: 't2',
-                userPw:
-                    'e3b98a4da31a127d4bde6e43033f66ba274cab0eb7eb1c70ec41402bf6273dd8',
-                deviceType: 'pc'
-            })
-        }
     }
 
     // head() {
@@ -75,23 +46,26 @@ class MainPage extends React.Component {
         return (
             <div>
                 {/* {this.head()} */}
-                <HeaderContainer />
+                <HeaderContainer
+                    localVideo={this.localVideoRef}
+                    remoteVideo={this.remoteVideoRef}
+                />
                 <Container>
                     <section className="left-section">
                         <div className="local-video">
                             <video
+                                ref={this.localVideoRef}
                                 id="local"
                                 muted
                                 autoPlay
-                                src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
                             />
                         </div>
                         <div className="remote-video">
                             <video
+                                ref={this.remoteVideoRef}
                                 id="remote"
                                 muted
                                 autoPlay
-                                src="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
                             />
                         </div>
                     </section>
