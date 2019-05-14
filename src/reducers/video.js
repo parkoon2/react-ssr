@@ -1,11 +1,12 @@
 import {
-    START_CLASS,
-    STOP_CLASS,
-    UPDATE_PEER_OBJECT
+    UPDATE_PEER_OBJECT,
+    UPDATE_REMOTE_STREAM,
+    UPDATE_LOCAL_STREAM
 } from '../actions/actionTypes'
 
 const initialState = {
-    inClass: false,
+    localStream: '',
+    remoteStream: '',
     peer: ''
 }
 
@@ -16,16 +17,16 @@ function videoReducer(state = initialState, action) {
                 ...state,
                 peer: action.payload
             }
-        case START_CLASS:
-            return {
-                ...state,
-                inClass: true
-            }
 
-        case STOP_CLASS:
+        case UPDATE_LOCAL_STREAM:
             return {
                 ...state,
-                inClass: false
+                localStream: action.payload
+            }
+        case UPDATE_REMOTE_STREAM:
+            return {
+                ...state,
+                remoteStream: action.payload
             }
 
         default:

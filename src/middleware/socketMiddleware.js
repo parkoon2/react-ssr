@@ -10,7 +10,8 @@ import {
     addMessage,
     loginSuccess,
     loginFailure,
-    updateRoomInfo
+    updateRoomInfo,
+    endLesson
 } from '../actions'
 import io from 'socket.io-client'
 
@@ -48,7 +49,18 @@ const handleSocketResponse = (data, store, cliendId) => {
             }
             return console.log('통화 불가능한 상태입니다.')
         case 'Presence':
-            return console.log('상대방이 참석했습니다.')
+            if (data.action === 'join') {
+                return console.log('상대방이 참석했습니다.')
+            } else {
+                // 상대방이 방을 나가면
+                // 회의 종료
+                // 회의 종료하면 해야 할 일이
+                // 녹화
+                // 스트림 끊기
+                // store.dispatch(endLesson())
+                console.log('상대방이 방을 나갔습니다.')
+            }
+
         case 'SDP':
             if (data.sdp && data.sdp.type === 'offer') {
                 const state = store.getState()

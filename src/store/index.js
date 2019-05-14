@@ -2,11 +2,13 @@ import { createStore, applyMiddleware } from 'redux'
 import thunk from 'redux-thunk'
 import rootReducer from '../reducers'
 import { composeWithDevTools } from 'redux-devtools-extension'
+
+// Custom middleware
 import socketMiddleware from '../middleware/socketMiddleware'
 import chatMiddleware from '../middleware/chatMiddleware'
+import p2pMiddleware from '../middleware/p2pMiddleware'
 
-const middlewares = [socketMiddleware, chatMiddleware, thunk]
-console.log('window.__PRELOADED_STATE__', window.__PRELOADED_STATE__)
+const middlewares = [socketMiddleware, p2pMiddleware, chatMiddleware, thunk]
 
 const preloadedState = window.__PRELOADED_STATE__
 

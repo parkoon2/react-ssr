@@ -7,7 +7,7 @@ import { HeaderContainer, socket } from '../components/global/Header'
 import Container from '../components/global/Container'
 import ChatContainer from '../container/ChatContainer'
 
-import { startClass, openWebSocket } from '../actions'
+import { startLesson, openWebSocket } from '../actions'
 
 class MainPage extends React.Component {
     constructor(props) {
@@ -92,7 +92,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        startClass: () => dispatch(startClass()),
+        startLesson: () => dispatch(startLesson()),
         openWebSocket: () => dispatch(openWebSocket())
     }
 }

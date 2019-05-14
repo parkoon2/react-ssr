@@ -1,11 +1,17 @@
-import React, { Component } from 'react'
+import React, { Component, PureComponent } from 'react'
 import { connect } from 'react-redux'
 import io from 'socket.io-client'
-import { updatePeer } from '../../actions'
+import {
+    updatePeer,
+    startLesson,
+    endLesson,
+    updateLocalStream,
+    updateRemoteStream
+} from '../../actions'
 
 let socket
 let peer
-class Header extends Component {
+class Header extends PureComponent {
     // endpoint = 'https://knowledgetalk.co.kr:9000/SignalServer'
     endpoint = 'http://localhost:3333'
     option = {
@@ -26,20 +32,36 @@ class Header extends Component {
         // socket.on('connect', this.handleSocketConnected)
     }
 
-    startClass = () => {
+    shouldComponentUpdate(nextProps, nextState) {
+        if (nextProps.lesson.on === this.props.lesson.on) {
+            return false
+        }
+        return true
+    }
+
+    renderLessonButton = () => {
+        const { lesson } = this.props
+
+        if (lesson.on) {
+            return (
+                <div className="call-btn" onClick={this.endLesson}>
+                    강의종료
+                </div>
+            )
+        } else {
+            return (
+                <div className="call-btn" onClick={this.startLesson}>
+                    강의시작
+                </div>
+            )
+        }
+    }
+
+    startLesson = () => {
         const { dispatch, localVideo, remoteVideo } = this.props
         const { socket } = this.props.socket
         const { student, teacher } = this.props.user
         try {
-            console.log({
-                eventOp: 'Call',
-                reqNo: '1',
-                reqDate: '2',
-                userId: teacher,
-                targetId: [student],
-                serviceType: 'multi',
-                reqDeviceType: 'pc'
-            })
             socket.emit('gigagenie', {
                 eventOp: 'Call',
                 reqNo: '1',
@@ -57,13 +79,12 @@ class Header extends Component {
         peer = new RTCPeerConnection(this.configuration)
 
         // handle onaddstream
-        peer.onaddstream = event => {
+        peer.onaddstream = e => {
             // remoteStream = event.stream
-            console.log('========= LOG START event.stream =======')
-            console.log(event.stream)
-            console.log('========= LOG END =========')
-
-            remoteVideo.current.srcObject = event.stream
+            const remoteStream = event.stream
+            dispatch(updateRemoteStream(remoteStream))
+            dispatch(startLesson())
+            remoteVideo.current.srcObject = remoteStream
         }
 
         // handle onicecandidate
@@ -95,6 +116,7 @@ class Header extends Component {
             .then(stream => {
                 peer.addStream(stream)
                 dispatch(updatePeer(peer))
+                dispatch(updateLocalStream(stream))
                 localVideo.current.srcObject = stream
             })
             .catch(err => {
@@ -102,41 +124,36 @@ class Header extends Component {
             })
     }
 
-    stopClass = () => {
-        this.props.stopClass()
+    endLesson = () => {
+        const { video, localVideo, user } = this.props
+        const { socket } = this.props.socket
+
+        try {
+            video.localStream.getTracks().forEach(track => {
+                track.stop()
+            })
+
+            localVideo.src = ''
+        } catch (err) {
+            console.error('[error in endLesson method]', err)
+        }
+        // 2. 종료 메세지 보내기
+        socket.emit({
+            signalOp: 'Presence',
+            userId: user.teacher,
+            action: 'exit'
+        })
     }
 
     render() {
-        const { video, user } = this.props
+        const { video, user, lesson } = this.props
 
         return (
             <header id="header">
                 <div className="header-left">
                     <div className="logo">LOGO</div>
                 </div>
-                <div className="header-right">
-                    {(() => {
-                        // 학생의 경우 강의시작 버튼 없음
-                        if (user.type === 'caller') return null
-
-                        // 선생님의 경우
-                        if (video.inClass)
-                            return (
-                                <div
-                                    className="call-btn"
-                                    onClick={this.stopClass}
-                                >
-                                    강의종료
-                                </div>
-                            )
-
-                        return (
-                            <div className="call-btn" onClick={this.startClass}>
-                                강의시작
-                            </div>
-                        )
-                    })()}
-                </div>
+                <div className="header-right">{this.renderLessonButton()}</div>
             </header>
         )
     }
@@ -146,15 +163,16 @@ const mapStateToProps = state => {
     return {
         video: state.video,
         user: state.user,
-        socket: state.socket
+        socket: state.socket,
+        lesson: state.lesson
     }
 }
 
 // const mapDispatchToProps = dispatch => {
 //     return {
 //         updatePeer: () => dis
-//         // startClass: () => dispatch(actions.startClass()),
-//         // stopClass: () => dispatch(actions.stopClass())
+//         // startLesson: () => dispatch(actions.startLesson()),
+//         // endLesson: () => dispatch(actions.endLesson())
 //     }
 // }
 

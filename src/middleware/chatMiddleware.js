@@ -4,15 +4,18 @@ import { addMessage } from '../actions'
 const chatMiddleware = store => next => action => {
     const state = store.getState()
     const { socket } = state.socket
+    const { teacher } = state.user
 
     if (action.type === SEND_MESSAGE) {
         let message = {
             message: action.payload.message,
             user: action.payload.user
         }
+
         socket.emit('gigagenie', {
-            eventOp: 'Chat',
-            ...message
+            signalOp: 'Chat',
+            userId: teacher,
+            message: action.payload.message
         })
 
         store.dispatch(addMessage(message))

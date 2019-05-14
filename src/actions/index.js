@@ -1,6 +1,6 @@
 import {
     START_CLASS,
-    STOP_CLASS,
+    END_CLASS,
     OPEN_WEBSOCKET,
     UPDATE_SOCKET_OBJECT,
     CONNECT_SOCKET_ERROR,
@@ -10,10 +10,10 @@ import {
     LOGIN_SUCCESS,
     LOGIN_FAILURE,
     UPDATE_PEER_OBJECT,
-    UPDATE_ROOM_INFO
+    UPDATE_ROOM_INFO,
+    UPDATE_LOCAL_STREAM,
+    UPDATE_REMOTE_STREAM
 } from './actionTypes'
-
-import { socket } from '../components/global/Header'
 
 export const loginFailure = message => {
     return {
@@ -27,30 +27,8 @@ export const loginSuccess = () => {
     }
 }
 
-export const startClass = () => {
-    return {
-        type: START_CLASS
-    }
-}
-
-// export const startClassAsync = () => dispatch => {
-//     socket.emit('gigagenie', {
-//         eventOp: 'Call',
-//         reqNo: '1',
-//         userId: '2',
-//         reqDate: '3',
-//         reqDeviceType: 'pc',
-//         targetId: 't2',
-//         roomId: 'room#1',
-//     })
-//     dispatch()
-// }
-
-export const stopClass = () => {
-    return {
-        type: STOP_CLASS
-    }
-}
+export const startLesson = () => ({ type: START_CLASS })
+export const endLesson = () => ({ type: END_CLASS })
 
 export const sendMessage = payload => {
     return {
@@ -72,12 +50,15 @@ export const openWebSocket = () => {
     }
 }
 
-export const updatePeer = peer => {
-    return {
-        type: UPDATE_PEER_OBJECT,
-        payload: peer
-    }
-}
+export const updatePeer = peer => ({ type: UPDATE_PEER_OBJECT, payload: peer })
+export const updateLocalStream = stream => ({
+    type: UPDATE_LOCAL_STREAM,
+    payload: stream
+})
+export const updateRemoteStream = stream => ({
+    type: UPDATE_REMOTE_STREAM,
+    payload: stream
+})
 
 export const updateRoomInfo = room => {
     return {
