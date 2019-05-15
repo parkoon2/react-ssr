@@ -28,9 +28,9 @@ let socket
 
 const handleSocketResponse = (data, store, cliendId) => {
     console.log('[socket response]', data)
-    const { eventOp } = data
+    const { eventOp, signalOp } = data
 
-    switch (eventOp) {
+    switch (eventOp || signalOp) {
         case 'Login':
             if (data.code === 200) {
                 return store.dispatch(loginSuccess())
@@ -38,7 +38,7 @@ const handleSocketResponse = (data, store, cliendId) => {
             return store.dispatch(loginFailure(data.message))
         case 'Chat':
             return store.dispatch(
-                addMessage({ user: cliendId, message: data.message })
+                addMessage({ user: data.userId, message: data.message })
             )
         case 'Call':
             if (data.code * 1 === 200) {
@@ -52,12 +52,7 @@ const handleSocketResponse = (data, store, cliendId) => {
             if (data.action === 'join') {
                 return console.log('상대방이 참석했습니다.')
             } else {
-                // 상대방이 방을 나가면
-                // 회의 종료
-                // 회의 종료하면 해야 할 일이
-                // 녹화
-                // 스트림 끊기
-                // store.dispatch(endLesson())
+                store.dispatch(endLesson())
                 console.log('상대방이 방을 나갔습니다.')
             }
 
@@ -99,7 +94,7 @@ const handleSocketResponse = (data, store, cliendId) => {
             break
 
         default:
-            console.warn('[event op warnning]')
+            console.warn('[event op warnning]', eventOp || signalOp)
     }
 }
 

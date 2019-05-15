@@ -8,6 +8,7 @@ import {
     updateLocalStream,
     updateRemoteStream
 } from '../../actions'
+import { stopStream } from '../../helpers/stream'
 
 let socket
 let peer
@@ -92,7 +93,7 @@ class Header extends PureComponent {
             const { socket } = this.props.socket
             const { teacher, room } = this.props.user
             if (event.candidate) {
-                socket.emit({
+                socket.emit('gigagenie', {
                     eventOp: 'Candidate',
                     candidate: event.candidate,
                     reqDate: '20190513180621947',
@@ -125,24 +126,10 @@ class Header extends PureComponent {
     }
 
     endLesson = () => {
-        const { video, localVideo, user } = this.props
+        const { user, dispatch } = this.props
         const { socket } = this.props.socket
 
-        try {
-            video.localStream.getTracks().forEach(track => {
-                track.stop()
-            })
-
-            localVideo.src = ''
-        } catch (err) {
-            console.error('[error in endLesson method]', err)
-        }
-        // 2. 종료 메세지 보내기
-        socket.emit({
-            signalOp: 'Presence',
-            userId: user.teacher,
-            action: 'exit'
-        })
+        dispatch(endLesson())
     }
 
     render() {

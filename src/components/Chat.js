@@ -1,4 +1,5 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import ChatInputBar from './ChatInputBar'
 import ChatMessage from './ChatMessage'
@@ -9,6 +10,7 @@ class Chat extends React.Component {
     }
     render() {
         const { chat, sendMessage } = this.props
+        const { teacher } = this.props.user
 
         return (
             <div className="chat-field">
@@ -16,7 +18,7 @@ class Chat extends React.Component {
                     {chat.messages.map(({ user, message }, idx) => (
                         <ChatMessage
                             key={idx}
-                            you={true}
+                            you={user === teacher}
                             message={message}
                             username={user}
                         />
@@ -38,4 +40,6 @@ Chat.propTypes = {}
 
 Chat.defaultProps = {}
 
-export default Chat
+const mapStateToProps = state => ({ user: state.user })
+
+export default connect(mapStateToProps)(Chat)
